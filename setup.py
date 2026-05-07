@@ -7,7 +7,7 @@ with open("README.md", "r", encoding="utf-8") as f:
 __version__ = "0.0.0"
 
 REPO_NAME = "End-to-End-Chest-cancer-classification-using-mlflow"
-AUTHOR_USER_NAME = "Sayani Pal"
+AUTHOR_USER_NAME = "sayani-pal"
 SRC_REPO = "cnnClassifier"
 AUTHOR_EMAIL = "pal.sayani.2005@gmail.com"
 
