@@ -3,9 +3,9 @@ import urllib.request as request
 from zipfile import ZipFile
 import tensorflow as tf
 import time
+
 from cnnClassifier.entity.config_entity import TrainingConfig
 from pathlib import Path
-
 
 
 class Training:
@@ -18,10 +18,18 @@ class Training:
             self.config.updated_base_model_path
         )
 
+        # Compile model before training
+        self.model.compile(
+            optimizer=tf.keras.optimizers.Adam(),
+            loss=tf.keras.losses.CategoricalCrossentropy(),
+            metrics=["accuracy"]
+        )
+
+
     def train_valid_generator(self):
 
         datagenerator_kwargs = dict(
-            rescale = 1./255,
+            rescale=1./255,
             validation_split=0.20
         )
 
@@ -43,6 +51,7 @@ class Training:
         )
 
         if self.config.params_is_augmentation:
+
             train_datagenerator = tf.keras.preprocessing.image.ImageDataGenerator(
                 rotation_range=40,
                 horizontal_flip=True,
@@ -52,6 +61,7 @@ class Training:
                 zoom_range=0.2,
                 **datagenerator_kwargs
             )
+
         else:
             train_datagenerator = valid_datagenerator
 
@@ -62,17 +72,23 @@ class Training:
             **dataflow_kwargs
         )
 
-    
+
     @staticmethod
     def save_model(path: Path, model: tf.keras.Model):
         model.save(path)
 
 
-
-    
     def train(self):
-        self.steps_per_epoch = self.train_generator.samples // self.train_generator.batch_size
-        self.validation_steps = self.valid_generator.samples // self.valid_generator.batch_size
+
+        self.steps_per_epoch = (
+            self.train_generator.samples //
+            self.train_generator.batch_size
+        )
+
+        self.validation_steps = (
+            self.valid_generator.samples //
+            self.valid_generator.batch_size
+        )
 
         self.model.fit(
             self.train_generator,
@@ -86,4 +102,3 @@ class Training:
             path=self.config.trained_model_path,
             model=self.model
         )
-
